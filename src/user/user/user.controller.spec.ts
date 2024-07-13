@@ -12,7 +12,14 @@ describe('UserController', () => {
     controller = module.get<UserController>(UserController)
   })
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined()
+  it('should can say hello', async () => {
+    const response = await controller.sayHello('Bayu', 'Raharja')
+    expect(response).toBe('Hello Bayu Raharja!')
+  })
+
+  it('should can redirect response', () => {
+    const response = controller.redirect()
+    expect(response.statusCode).toBe(301)
+    expect(response.url).toBe('/api/users/sample-response')
   })
 })
