@@ -13,9 +13,19 @@ import {
   Res
 } from '@nestjs/common'
 import { Request, Response } from 'express'
+import { UserService } from './user.service'
 
 @Controller('/api/users')
 export class UserController {
+  /** Start Dependency Injection */
+  constructor(private service: UserService) {}
+
+  @Get('/say-hello')
+  async sayHello2(@Query('name') name: string): Promise<string> {
+    return this.service.sayHello(name)
+  }
+  /** End Dependency Injection */
+
   /** Start Cookie */
   @Post('/set-cookie')
   setCookie(@Body('name') name: string, @Res() response: Response) {
