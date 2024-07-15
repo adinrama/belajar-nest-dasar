@@ -1,28 +1,16 @@
 import { Body, Controller, Delete, Get, Header, HttpCode, Param, Patch, Post, Res } from '@nestjs/common'
 import { Response } from 'express'
-
-const products = [
-  {
-    id: 1,
-    product: 'Sepatu Vans',
-    price: 500000,
-    size: 'XL'
-  },
-  {
-    id: 2,
-    product: 'Tas Merk Dior',
-    price: 2000000,
-    size: 'L'
-  }
-]
+import { ProductService } from './product.service'
 
 @Controller('/api/products')
 export class ProductController {
+  constructor(private service: ProductService) {}
+
   @Get('/:id')
   @Header('Content-Type', 'application/json')
   @HttpCode(200)
   async getProductById(@Param('id') id: number, @Res() response: Response): Promise<object> {
-    const product = products.find((item) => item['id'] == id)
+    const product = this.service.getProductById(id)
     if (product) {
       return response.json({
         status: 'Success',
@@ -30,7 +18,7 @@ export class ProductController {
         data: product
       })
     }
-    return response.json({
+    return response.status(404).json({
       status: 'Failed',
       message: `Product with id ${id} not found`
     })
@@ -40,6 +28,7 @@ export class ProductController {
   @Header('Content-Type', 'application/json')
   @HttpCode(200)
   async getProducts(@Res() response: Response): Promise<object> {
+    const products = this.service.getAllProducts()
     return response.json({
       status: 'Success',
       message: 'Success get all products',
@@ -56,8 +45,10 @@ export class ProductController {
     @Body('size') size: string,
     @Res() response: Response
   ): Promise<object> {
-    if (product == null || price == null || size == null) {
-      return response.json({
+    const validation = this.service.checkProduct(product, price, size)
+    const products = this.service.getAllProducts()
+    if (validation) {
+      return response.status(422).json({
         status: 'Failed',
         message: 'You must fill out all the sections'
       })
@@ -80,7 +71,7 @@ export class ProductController {
     @Body('size') size: string,
     @Res() response: Response
   ): Promise<object> {
-    const item = products.find((item) => item['id'] == id)
+    const item = this.service.getProductById(id)
     if (item) {
       if (product !== undefined) item['product'] = product
       if (price !== undefined) item['price'] = price
@@ -91,7 +82,7 @@ export class ProductController {
         data: item
       })
     }
-    return response.json({
+    return response.status(404).json({
       status: 'Failed',
       message: `Product with id ${id} not found`
     })
@@ -100,6 +91,7 @@ export class ProductController {
   @Delete('/:id')
   @HttpCode(200)
   async deleteProduct(@Param('id') id: number, @Res() response: Response): Promise<object> {
+    const products = this.service.getAllProducts()
     let i = 0
     for (i; i < products.length; i++) {
       if (products[i]['id'] == id) {
@@ -110,7 +102,7 @@ export class ProductController {
         })
       }
     }
-    return response.json({
+    return response.status(404).json({
       status: 'Failed',
       message: `Product with id ${id} not found`
     })

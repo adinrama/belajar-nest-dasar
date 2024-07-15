@@ -1,19 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ProductController } from './product.controller'
 import * as httpMock from 'node-mocks-http'
+import { ProductService } from './product.service'
 
 describe('ProductController', () => {
   let controller: ProductController
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [ProductController]
+      controllers: [ProductController],
+      providers: [ProductService]
     }).compile()
 
     controller = module.get<ProductController>(ProductController)
   })
 
-  it('should can get product by id', async () => {
+  it('must fail to get the product with id not found', async () => {
     const response = httpMock.createResponse()
     controller.getProductById(5, response)
     expect(response.statusCode).toBe(200)
