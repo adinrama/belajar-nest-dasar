@@ -13,13 +13,24 @@ import {
   Res
 } from '@nestjs/common'
 import { Request, Response } from 'express'
+import { Connection } from '../connection/connection'
 import { UserService } from './user.service'
 
 @Controller('/api/users')
 export class UserController {
-  /** Start Dependency Injection */
-  constructor(private service: UserService) {}
+  constructor(
+    private service: UserService,
+    private connection: Connection
+  ) {}
 
+  /** Start Class Provider */
+  @Get('/connection')
+  async getConnection(): Promise<string> {
+    return this.connection.getName()
+  }
+  /** End Class Provider */
+
+  /** Start Dependency Injection */
   @Get('/say-hello')
   async sayHello2(@Query('name') name: string): Promise<string> {
     return this.service.sayHello(name)
