@@ -14,21 +14,24 @@ import {
 } from '@nestjs/common'
 import { Request, Response } from 'express'
 import { Connection } from '../connection/connection'
+import { MailService } from '../mail/mail.service'
 import { UserService } from './user.service'
 
 @Controller('/api/users')
 export class UserController {
   constructor(
     private service: UserService,
-    private connection: Connection
+    private connection: Connection,
+    private mailService: MailService
   ) {}
 
-  /** Start Class Provider */
+  /** Start Custom Provider */
   @Get('/connection')
   async getConnection(): Promise<string> {
+    this.mailService.send()
     return this.connection.getName()
   }
-  /** End Class Provider */
+  /** End Custom Provider */
 
   /** Start Dependency Injection */
   @Get('/say-hello')
