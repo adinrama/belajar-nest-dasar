@@ -27,6 +27,13 @@ export class UserController {
     private userRepository: UserRepository
   ) {}
 
+  /** Start Configuration: DB Connection Study Case */
+  @Get('/create-connection')
+  async createConnection(): Promise<string> {
+    return this.connection.getName()
+  }
+  /** End Configuration: DB Connection Study Case */
+
   /** Start Custom Provider */
   @Get('/connection')
   async getConnection(): Promise<string> {
