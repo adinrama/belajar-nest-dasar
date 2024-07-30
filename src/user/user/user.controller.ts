@@ -12,6 +12,7 @@ import {
   Req,
   Res
 } from '@nestjs/common'
+import { User } from '@prisma/client'
 import { Request, Response } from 'express'
 import { Connection } from '../connection/connection'
 import { MailService } from '../mail/mail.service'
@@ -27,6 +28,13 @@ export class UserController {
     private userRepository: UserRepository
   ) {}
 
+  /** Start Database */
+  @Post('/create-user')
+  async createUser(@Body('first_name') firstName: string, @Body('last_name') lastName: string): Promise<User> {
+    return this.userRepository.save(firstName, lastName)
+  }
+  /** End Database */
+
   /** Start Configuration: DB Connection Study Case */
   @Get('/create-connection')
   async createConnection(): Promise<string> {
@@ -37,7 +45,6 @@ export class UserController {
   /** Start Custom Provider */
   @Get('/connection')
   async getConnection(): Promise<string> {
-    this.userRepository.save()
     this.mailService.send()
     return this.connection.getName()
   }
